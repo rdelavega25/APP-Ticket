@@ -247,11 +247,11 @@ function populateResults(datos) {
     setTimeout(() => { confidenceFill.style.width = pct + '%'; }, 50);
   });
 
-  // Color de confianza
+  // Color de confianza alegre
   confidenceFill.style.background =
-    pct === 100 ? 'linear-gradient(90deg, #007A33, #005a26)' :
-    pct >= 66   ? 'linear-gradient(90deg, #CC0000, #007A33)' :
-                  'linear-gradient(90deg, #f59e0b, #CC0000)';
+    pct === 100 ? 'linear-gradient(90deg, #00D166, #00A850)' :
+    pct >= 66   ? 'linear-gradient(90deg, #FF2A45, #00D166)' :
+                  'linear-gradient(90deg, #FFB800, #FF2A45)';
 }
 
 // ── Guardar en Airtable ──────────────────────────────────────────────────────
@@ -270,7 +270,7 @@ btnSave.addEventListener('click', async () => {
   }
 
   btnSave.disabled = true;
-  btnSave.innerHTML = '<span class="btn-icon">⏳</span> Guardando…';
+  btnSave.innerHTML = '<span class="btn-icon">⏳</span> Enviando…';
 
   try {
     const response = await fetch('/api/guardar-ticket', {
@@ -289,11 +289,11 @@ btnSave.addEventListener('click', async () => {
     showStep('success');
 
   } catch (err) {
-    showError(err.message || 'No se pudo guardar en Airtable.');
+    showError(err.message || 'No se pudo enviar el ticket.');
     console.error(err);
   } finally {
     btnSave.disabled = false;
-    btnSave.innerHTML = '<span class="btn-icon">☁️</span> Guardar en Airtable';
+    btnSave.innerHTML = '<span class="btn-icon">🚀</span> Enviar ticket';
   }
 });
 
