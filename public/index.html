@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contabilidad Vasquita – Digitaliza tus tickets al instante</title>
+  <meta name="description" content="Contabilidad Vasquita – Sube una foto o PDF de tu ticket y extrae automáticamente el comercio, fecha e importe total con inteligencia artificial." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ── Background blobs ── -->
+  <div class="bg-blob blob-1"></div>
+  <div class="bg-blob blob-2"></div>
+  <div class="bg-blob blob-3"></div>
+
+  <!-- ── Header ── -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">🏴</span>
+        <span class="logo-text">Contabilidad <span class="logo-ai">Vasquita</span></span>
+      </div>
+      <div class="header-badge">
+        <span class="badge-dot"></span>
+        Powered by GPT-4o
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Main ── -->
+  <main class="main">
+
+    <!-- Hero -->
+    <section class="hero">
+      <h1 class="hero-title">Contabilidad <span class="gradient-text">Vasquita</span></h1>
+      <p class="hero-sub">Sube una imagen o PDF de tu ticket y la IA extrae automáticamente el comercio, fecha e importe. Guárdalo en Airtable con un clic.</p>
+    </section>
+
+    <!-- Card principal -->
+    <div class="card">
+
+      <!-- ── PASO 1: Upload ── -->
+      <section class="step" id="step-upload">
+        <div class="step-header">
+          <div class="step-num">1</div>
+          <div>
+            <h2 class="step-title">Sube tu ticket</h2>
+            <p class="step-desc">Formatos admitidos: JPG, PNG, WEBP, GIF o PDF (máx. 20 MB)</p>
+          </div>
+        </div>
+
+        <form id="upload-form" enctype="multipart/form-data">
+          <!-- Drop zone -->
+          <div class="drop-zone" id="drop-zone" role="button" tabindex="0" aria-label="Zona de arrastre de archivos">
+            <div class="drop-icon-wrapper">
+              <svg class="drop-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 16L4 17C4 18.6569 5.34315 20 7 20L17 20C18.6569 20 20 18.6569 20 17L20 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M12 4L12 16M12 4L8 8M12 4L16 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <p class="drop-title">Arrastra tu archivo aquí</p>
+            <p class="drop-sub">o haz clic para seleccionarlo</p>
+            <input type="file" id="ticket-file" name="ticket" accept="image/*,application/pdf" class="file-input" aria-label="Seleccionar archivo" />
+          </div>
+
+          <!-- Preview -->
+          <div class="preview-area" id="preview-area" hidden>
+            <div class="preview-file" id="preview-file">
+              <span class="preview-icon" id="preview-icon">📄</span>
+              <div class="preview-info">
+                <span class="preview-name" id="preview-name"></span>
+                <span class="preview-size" id="preview-size"></span>
+              </div>
+              <button type="button" class="preview-remove" id="preview-remove" aria-label="Eliminar archivo">✕</button>
+            </div>
+            <img id="preview-img" class="preview-img" alt="Vista previa del ticket" hidden />
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="btn-process" disabled>
+            <span class="btn-icon">⚡</span>
+            Procesar ticket
+          </button>
+        </form>
+      </section>
+
+      <!-- ── PASO 2: Loader ── -->
+      <section class="step step-loading" id="step-loading" hidden>
+        <div class="loading-wrapper">
+          <div class="spinner-ring"></div>
+          <div class="loading-texts">
+            <p class="loading-title">Analizando ticket…</p>
+            <p class="loading-sub" id="loading-sub">Enviando a GPT-4o Vision</p>
+          </div>
+        </div>
+        <div class="loading-steps" id="loading-steps">
+          <div class="ls" id="ls-1"><span class="ls-dot active"></span> Enviando imagen</div>
+          <div class="ls" id="ls-2"><span class="ls-dot"></span> Extrayendo datos</div>
+          <div class="ls" id="ls-3"><span class="ls-dot"></span> Preparando resultados</div>
+        </div>
+      </section>
+
+      <!-- ── PASO 3: Resultados ── -->
+      <section class="step" id="step-results" hidden>
+        <div class="step-header">
+          <div class="step-num done">✓</div>
+          <div>
+            <h2 class="step-title">Datos extraídos</h2>
+            <p class="step-desc">Revisa y edita los datos antes de guardar en Airtable</p>
+          </div>
+        </div>
+
+        <div class="results-grid">
+          <div class="result-field">
+            <label for="field-comercio" class="result-label">
+              <span class="result-label-icon">🏪</span> Nombre del comercio
+            </label>
+            <input type="text" id="field-comercio" class="result-input" placeholder="Ej: Mercadona" autocomplete="off" />
+          </div>
+          <div class="result-field">
+            <label for="field-fecha" class="result-label">
+              <span class="result-label-icon">📅</span> Fecha
+            </label>
+            <input type="text" id="field-fecha" class="result-input" placeholder="DD/MM/YYYY" autocomplete="off" />
+          </div>
+          <div class="result-field">
+            <label for="field-importe" class="result-label">
+              <span class="result-label-icon">💶</span> Importe total
+            </label>
+            <div class="input-euro">
+              <input type="number" id="field-importe" class="result-input" placeholder="0.00" step="0.01" min="0" autocomplete="off" />
+              <span class="euro-symbol">€</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Confianza -->
+        <div class="confidence-bar-wrapper" id="confidence-wrapper">
+          <div class="confidence-label">
+            <span>Confianza de extracción</span>
+            <span id="confidence-pct">—</span>
+          </div>
+          <div class="confidence-bar">
+            <div class="confidence-fill" id="confidence-fill" style="width:0%"></div>
+          </div>
+        </div>
+
+        <div class="result-actions">
+          <button class="btn btn-ghost" id="btn-retry">
+            <span class="btn-icon">🔄</span> Nuevo ticket
+          </button>
+          <button class="btn btn-primary" id="btn-save">
+            <span class="btn-icon">☁️</span> Guardar en Airtable
+          </button>
+        </div>
+      </section>
+
+      <!-- ── PASO 4: Éxito ── -->
+      <section class="step step-success" id="step-success" hidden>
+        <div class="success-icon-wrap">
+          <div class="success-icon">✓</div>
+          <div class="success-rings">
+            <div class="ring ring-1"></div>
+            <div class="ring ring-2"></div>
+          </div>
+        </div>
+        <h2 class="success-title">¡Guardado en Airtable!</h2>
+        <p class="success-sub">El ticket se ha registrado correctamente en tu base de datos.</p>
+        <div class="success-record" id="success-record"></div>
+        <button class="btn btn-primary" id="btn-new">
+          <span class="btn-icon">➕</span> Procesar otro ticket
+        </button>
+      </section>
+
+      <!-- ── Error global ── -->
+      <div class="error-banner" id="error-banner" hidden>
+        <span class="error-icon">⚠️</span>
+        <span class="error-msg" id="error-msg"></span>
+        <button class="error-close" id="error-close" aria-label="Cerrar error">✕</button>
+      </div>
+
+    </div><!-- /card -->
+
+    <!-- Features -->
+    <div class="features">
+      <div class="feature">
+        <span class="feature-icon">🔒</span>
+        <span class="feature-text">Claves seguras en el servidor</span>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">⚡</span>
+        <span class="feature-text">Extracción en segundos</span>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">✏️</span>
+        <span class="feature-text">Edición manual antes de guardar</span>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">📊</span>
+        <span class="feature-text">Sync directo con Airtable</span>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <p>🏴 Contabilidad Vasquita · Tus datos nunca se almacenan en el servidor · <span id="year"></span></p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

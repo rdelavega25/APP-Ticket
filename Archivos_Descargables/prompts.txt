@@ -1,0 +1,39 @@
+### PROMPT CREAR APP ###
+Quiero crear una aplicación web que permita subir una imagen o PDF de un ticket de compra y extraer automáticamente la información relevante para almacenarla en Airtable.
+
+REQUISITOS:
+- Frontend sencillo en HTML, CSS y JavaScript.
+- Un formulario con:
+  - Campo para subir archivo (imagen o PDF)
+  - Botón "Procesar ticket"
+
+FUNCIONAMIENTO:
+1. Al subir el ticket:
+   - Enviar el archivo a la API de visión artificial de OpenAI
+   - Extraer automáticamente:
+     - nombre_comercio
+     - fecha
+     - importe_total
+
+2. Mostrar los datos extraídos en pantalla para validación manual.
+
+3. Al confirmar:
+   - Enviar los datos a una base de Airtable mediante su API.
+   - Usar variables de entorno para:
+     - API_KEY de OpenAI
+     - AIRTABLE_API_KEY
+     - AIRTABLE_BASE_ID
+     - AIRTABLE_TABLE_NAME
+
+REQUISITOS TÉCNICOS:
+- No exponer claves en frontend.
+- Crear un backend ligero (Node o similar) para manejar:
+  - envío a API de visión de openai
+  - inserción en Airtable
+- Explicar cómo ejecutar en local.
+
+Cuando hayas acabado y esté todo bien diseñado ya me pides las credenciales de airtable y openai
+
+
+### Estructura BD ###
+La extraccion de datos funciona perfecto, el caso es que aparece un error al guardar en airtable, entiendo que porque no estás vinculando correctamente los campos con los de la tabla de airtable, te paso la estructura
